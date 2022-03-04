@@ -13,6 +13,12 @@ app.use(cors());
 const userCollection = baseDeDatos.collection("users");
 const roomsCollection = baseDeDatos.collection("rooms");
 
+app.get("/hola", (req, res) => {
+  res.json({
+    message: "hola soy el servidor",
+  });
+});
+
 app.post("/messages/:rtdbRoomId", function (req, res) {
   var rtdbRoomId = req.body.rtdbRoomId;
   const chatRoomRef = rtdb.ref("/rooms/" + rtdbRoomId + "/messages");
