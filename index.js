@@ -4,10 +4,12 @@ const db_1 = require("./db");
 const express = require("express");
 // import { json } from "body-parser";
 const nanoid_1 = require("nanoid");
+const cors = require("cors");
 const port = process.env.PORT || 3100;
 const app = express();
 app.use(express.json());
-// app.use(cors());
+app.use(cors());
+app.use(express.static("dist"));
 const userCollection = db_1.baseDeDatos.collection("users");
 const roomsCollection = db_1.baseDeDatos.collection("rooms");
 app.get("/hola", (req, res) => {
