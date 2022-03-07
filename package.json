@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "type": "commonjs",
   "scripts": {
     "dev": "nodemon --watch ./index.ts --exec ts-node index.ts",
     "test": "ava",
-    "build": "tsc index.ts",
+    "build": "tsc",
     "start": "node index.js"
   },
   "dependencies": {
-    "@types/node": "^17.0.21",
+    "@types/node": "17.0.5",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",

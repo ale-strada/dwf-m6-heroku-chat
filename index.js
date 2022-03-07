@@ -1,127 +1,131 @@
 "use strict";
-exports.__esModule = true;
-var db_1 = require("./db");
-var express = require("express");
+Object.defineProperty(exports, "__esModule", { value: true });
+const db_1 = require("./db");
+const express = require("express");
 // import { json } from "body-parser";
-var nanoid_1 = require("nanoid");
-var cors = require("cors");
-var port = process.env.PORT || 3100;
-var app = express();
+const nanoid_1 = require("nanoid");
+const port = process.env.PORT || 3100;
+const app = express();
 app.use(express.json());
-app.use(cors());
-var userCollection = db_1.baseDeDatos.collection("users");
-var roomsCollection = db_1.baseDeDatos.collection("rooms");
+// app.use(cors());
+const userCollection = db_1.baseDeDatos.collection("users");
+const roomsCollection = db_1.baseDeDatos.collection("rooms");
+app.get("/hola", (req, res) => {
+    res.json({
+        message: "hola soy el servidor",
+    });
+});
 app.post("/messages/:rtdbRoomId", function (req, res) {
     var rtdbRoomId = req.body.rtdbRoomId;
-    var chatRoomRef = db_1.rtdb.ref("/rooms/" + rtdbRoomId + "/messages");
+    const chatRoomRef = db_1.rtdb.ref("/rooms/" + rtdbRoomId + "/messages");
     chatRoomRef.push(req.body, function (err) {
         res.json("todo ok");
     });
 });
-app.post("/singup", function (req, res) {
-    var email = req.body.email;
-    var nombre = req.body.nombre;
+app.post("/singup", (req, res) => {
+    const email = req.body.email;
+    const nombre = req.body.nombre;
     userCollection
         .where("email", "==", email)
         .get()
-        .then(function (searchResponse) {
+        .then((searchResponse) => {
         if (searchResponse.empty) {
             userCollection
                 .add({
-                email: email,
-                nombre: nombre
+                email,
+                nombre,
             })
-                .then(function (newUserRef) {
+                .then((newUserRef) => {
                 res.json({
                     id: newUserRef.id,
-                    "new": true
+                    new: true,
                 });
             });
         }
         else {
             res.status(400).json({
                 message: "user already exist",
-                id: searchResponse.docs[0].id
+                id: searchResponse.docs[0].id,
             });
         }
     });
 });
-app.post("/auth", function (req, res) {
-    var email = req.body.email;
+app.post("/auth", (req, res) => {
+    const { email } = req.body;
     userCollection
         .where("email", "==", email)
         .get()
-        .then(function (searchResponse) {
+        .then((searchResponse) => {
         if (searchResponse.empty) {
             res.status(404).json({
-                message: "not found"
+                message: "not found",
             });
         }
         else {
             res.json({
-                id: searchResponse.docs[0].id
+                id: searchResponse.docs[0].id,
             });
         }
     });
 });
-app.post("/rooms", function (req, res) {
-    var userId = req.body.userId;
+app.post("/rooms", (req, res) => {
+    const { userId } = req.body;
     userCollection
         .doc(userId.toString())
         .get()
-        .then(function (doc) {
+        .then((doc) => {
         if (doc.exists) {
-            var roomRef_1 = db_1.rtdb.ref("rooms/" + (0, nanoid_1.nanoid)());
-            roomRef_1
+            const roomRef = db_1.rtdb.ref("rooms/" + (0, nanoid_1.nanoid)());
+            roomRef
                 .set({
                 messages: [],
-                owner: userId
+                owner: userId,
             })
-                .then(function () {
-                var roomLongId = roomRef_1.key;
-                var roomId = 1000 + Math.floor(Math.random() * 999);
+                .then(() => {
+                const roomLongId = roomRef.key;
+                const roomId = 1000 + Math.floor(Math.random() * 999);
                 roomsCollection
                     .doc(roomId.toString())
                     .set({
-                    rtdbRoomId: roomLongId
+                    rtdbRoomId: roomLongId,
                 })
-                    .then(function () {
+                    .then(() => {
                     res.json({
-                        id: roomId.toString()
+                        id: roomId.toString(),
                     });
                 });
             });
         }
         else {
             res.status(401).json({
-                message: "no existis"
+                message: "no existis",
             });
         }
     });
 });
-app.get("/rooms/:roomId", function (req, res) {
-    var userId = req.query.userId;
-    var roomId = req.params.roomId;
+app.get("/rooms/:roomId", (req, res) => {
+    const { userId } = req.query;
+    const { roomId } = req.params;
     userCollection
         .doc(userId.toString())
         .get()
-        .then(function (doc) {
+        .then((doc) => {
         if (doc.exists) {
             roomsCollection
                 .doc(roomId)
                 .get()
-                .then(function (snap) {
-                var data = snap.data();
+                .then((snap) => {
+                const data = snap.data();
                 res.json(data);
             });
         }
         else {
             res.status(401).json({
-                message: "no existis"
+                message: "no existis",
             });
         }
     });
 });
-app.listen(port, function () {
-    console.log("Example app listening at http://localhost:".concat(port));
+app.listen(port, () => {
+    console.log(`Example app listening at http://localhost:${port}`);
 });

@@ -8,7 +8,7 @@ const port = process.env.PORT || 3100;
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
 
 const userCollection = baseDeDatos.collection("users");
 const roomsCollection = baseDeDatos.collection("rooms");
