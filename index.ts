@@ -1,6 +1,5 @@
 import { baseDeDatos, rtdb } from "./db";
 import * as express from "express";
-// import { json } from "body-parser";
 import { nanoid } from "nanoid";
 import * as cors from "cors";
 
@@ -133,7 +132,9 @@ app.get("/rooms/:roomId", (req, res) => {
       }
     });
 });
-
+app.get("*", (req, res) => {
+  res.sendFile(__dirname + "/dist/index.html");
+});
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
